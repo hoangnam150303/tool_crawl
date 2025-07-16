@@ -37,18 +37,25 @@ const NavBar = () => {
 
           {/* Menu chữ bên dưới */}
           <div className="flex items-center">
-            <ul className="flex gap-6 list-none p-0 m-0 text-black">
-              <li className="px-2 text-gray-500">Home</li>
-              <li className="px-2">Auto-detect Violations</li>
-              <li className="px-2">Violance reviewed</li>
-              <li className="px-2">Submit violations</li>
-              <li className="px-2">Analysis</li>
+            <ul className="flex gap-6 list-none -black">
+              <li style={{ marginRight: "20px" }}>Home</li>
+              <li style={{ marginRight: "20px" }}>Auto-detect Violations</li>
+              <li style={{ marginRight: "20px" }}>Violance reviewed</li>
+              <li style={{ marginRight: "20px" }}>Submit violations</li>
+              <li style={{ marginRight: "20px" }}>Analysis</li>
             </ul>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="bg-teal-600 hover:bg-teal-700 text-white font-medium px-5 py-1.5 rounded-full">
+          <button
+            className="hover:bg-teal-700 text-white font-medium px-5 py-1.5 rounded-full"
+            style={{
+              backgroundColor: "#19A891",
+              fontSize: "15px",
+              padding: "10px 20px",
+            }}
+          >
             Login
           </button>
         </div>

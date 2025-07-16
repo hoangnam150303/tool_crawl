@@ -5,7 +5,14 @@ const puppeteer = require("puppeteer");
  * It uses Puppeteer to navigate to the page and extract post data
  */
 module.exports = async function crawlGenericWebsite(url) {
-  const browser = await puppeteer.launch({ headless: "new" }); // Launch a new browser instance
+  const browser = await puppeteer.launch({
+    headless: false, // set headless to false to see the browser actions
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-blink-features=AutomationControlled",
+    ],
+  }); // Launch a new browser instance
   const page = await browser.newPage(); // Open a new page
 
   try {

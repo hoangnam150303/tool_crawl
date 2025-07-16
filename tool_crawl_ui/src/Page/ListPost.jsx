@@ -4,6 +4,7 @@ import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import postApi from "../Hooks/postApi";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import NavBar from "../Components/NavBar";
 export const ListPost = () => {
   const [searchText, setSearchText] = useState("");
   const [posts, setPosts] = useState([]);
@@ -54,6 +55,13 @@ export const ListPost = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+      render: (text) => {
+        const maxLength = 100;
+        const shortText =
+          text?.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+
+        return <span title={text}>{shortText || "No title"}</span>;
+      },
     },
     {
       title: "Platform",
@@ -98,54 +106,57 @@ export const ListPost = () => {
   ];
 
   return (
-    <div className="p-4">
-      {/* Hàng 1: Input + Search */}
-      <div className="flex gap-2 mb-4 items-center">
-        <Input
-          placeholder="Enter URL(s)..."
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          className="w-96"
+    <>
+      <NavBar />
+      <div className="p-4">
+        <div className="flex gap-2 mb-4 items-center">
+          <Input
+            placeholder="Enter URL(s)..."
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="w-96"
+          />
+          <Button type="primary" onClick={postCrawl}>
+            Search
+          </Button>
+        </div>
+
+        <div className="flex gap-2 mb-4 items-center">
+          <Upload
+            beforeUpload={handleFileUpload}
+            showUploadList={false}
+            accept=".json"
+          >
+            <Button icon={<UploadOutlined />}>Upload JSON</Button>
+          </Upload>
+
+          <Button
+            onClick={handleApplyJson}
+            disabled={uploadedJson.length === 0}
+          >
+            Apply
+          </Button>
+        </div>
+
+        <Table
+          dataSource={posts.map((p, idx) => ({ ...p, key: idx }))}
+          columns={columns}
+          loading={loading}
+          pagination={{ pageSize: 6 }}
+          scroll={{ x: "max-content" }}
+          bordered
+          onRow={(record) => ({
+            onClick: () => {
+              if (record._id) {
+                navigate(`/post/${record._id}`);
+              } else {
+                message.warning("Post ID is missing.");
+              }
+            },
+          })}
         />
-        <Button type="primary" onClick={postCrawl}>
-          Search
-        </Button>
       </div>
-
-      {/* Hàng 2: Upload JSON + Apply */}
-      <div className="flex gap-2 mb-4 items-center">
-        <Upload
-          beforeUpload={handleFileUpload}
-          showUploadList={false}
-          accept=".json"
-        >
-          <Button icon={<UploadOutlined />}>Upload JSON</Button>
-        </Upload>
-
-        <Button onClick={handleApplyJson} disabled={uploadedJson.length === 0}>
-          Apply
-        </Button>
-      </div>
-
-      {/* Table */}
-      <Table
-        dataSource={posts.map((p, idx) => ({ ...p, key: idx }))}
-        columns={columns}
-        loading={loading}
-        pagination={{ pageSize: 6 }}
-        scroll={{ x: "max-content" }}
-        bordered
-        onRow={(record) => ({
-          onClick: () => {
-            if (record._id) {
-              navigate(`/post/${record._id}`);
-            } else {
-              message.warning("Post ID is missing.");
-            }
-          },
-        })}
-      />
-    </div>
+    </>
   );
 };

@@ -48,12 +48,19 @@ const DetailPost = () => {
   return (
     <>
       <NavBar />
-      <div className="p-6 max-w-6xl mx-auto">
+      <div
+        className="p-6 max-w-6xl mx-auto"
+        style={{ backgroundColor: "#B4C3C059", height: "100vh" }}
+      >
         {/* Back button */}
-        <div className="mb-4">
+        <div
+          className="mb-4 flex justify-between items-center"
+          style={{ marginBottom: "20px", marginTop: "20px" }}
+        >
           <Button
             icon={<LeftOutlined />}
             type="default"
+            style={{ backgroundColor: "#19A891", borderColor: "#19A891" }}
             onClick={() => navigate(-1)}
           >
             Back
@@ -62,11 +69,11 @@ const DetailPost = () => {
 
         <div className="flex gap-4 items-start">
           {/* Image */}
-          <div className="w-[180px] h-[180px] flex-shrink-0">
+          <div>
             <img
               src={post.imageUrl}
               alt="Post"
-              className="w-full h-full object-cover rounded-md"
+              style={{ height: "300px", width: "300px", margin: "0 " }}
             />
           </div>
 
@@ -77,7 +84,10 @@ const DetailPost = () => {
               bodyStyle={{ padding: "16px" }}
             >
               <div className="flex justify-between items-start">
-                <Paragraph className="whitespace-pre-wrap mb-0 font-medium">
+                <Paragraph
+                  className="whitespace-pre-wrap mb-0 font-medium"
+                  style={{ height: "400px" }}
+                >
                   {post.title || "No title"}
                 </Paragraph>
                 {post.articleUrl && (
@@ -95,8 +105,12 @@ const DetailPost = () => {
         </div>
 
         {/* Info Section */}
-        <div className="mt-8">
-          <Title level={5} className="text-teal-700 uppercase tracking-wide">
+        <div className="mt-8" style={{ marginBottom: "200px" }}>
+          <Title
+            level={5}
+            className="text-teal-700 uppercase tracking-wide"
+            style={{ marginBottom: "16px", color: "#19A891" }}
+          >
             Information
           </Title>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 mt-2">

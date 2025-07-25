@@ -2,28 +2,38 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
-    platform: {
-      type: String,
-      enum: ["facebook", "instagram", "website"],
+    advertiser_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
-    title: {
-      type: String,
+    content: {
+      text: {
+        type: String,
+        required: true,
+      },
+      label: {
+        type: String,
+        enum: ["Intent", "Sentiment", "Violation"],
+      },
+    },
+    process_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Process",
       required: true,
     },
-    imageUrl: {
-      type: String,
+    image: {
+      url: {
+        type: String,
+      },
+      label: {
+        type: String,
+      enum: ["Icon", "Restriced_Object", "Content"],
+      },
     },
-    articleUrl: {
-      type: String,
-    },
-    date: {
-      type: Date,
-      required: true,
-    },
-    crawledAt: {
-      type: Date,
-      default: Date.now,
+    reviewed_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {

@@ -7,7 +7,7 @@ const fs = require("fs-extra");
  */
 module.exports = async function crawlInstagram(profileUrl, scrollCount = 3) {
   const browser = await puppeteer.launch({
-    headless: false, // set headless to false to see the browser actions
+    headless: true, // set headless to false to see the browser actions
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -19,7 +19,7 @@ module.exports = async function crawlInstagram(profileUrl, scrollCount = 3) {
 
   try {
     // Set cookies if available
-    const cookies = JSON.parse(fs.readFileSync("cookies.json", "utf8"));
+    const cookies = JSON.parse(fs.readFileSync("Instacookies.json", "utf8"));
     await page.setCookie(...cookies);
 
     // Navigate to the Instagram profile

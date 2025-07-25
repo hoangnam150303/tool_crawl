@@ -1,16 +1,7 @@
 const express = require("express");
-const router = express.Router();
-const upload = require("../middleware/multer");
-const crawlersController = require("../controller/crawlers.controller");
+const postRoute = express.Router();
+const postController = require("../controller/post.controller");
+postRoute.get("/getAllPost", postController.getAllPost);
+postRoute.put("/updatePost/:postId/:moderator_id", postController.updatePost);
 
-// Route POST upload file JSON
-router.post(
-  "/upload-json",
-  upload.single("file"),
-  crawlersController.handleAddJsonFile
-);
-
-router.post("/crawl", crawlersController.handleCrawl);
-router.get("/getPost/:id", crawlersController.getPostById);
-
-module.exports = router;
+module.exports = postRoute;

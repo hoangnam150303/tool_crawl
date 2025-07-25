@@ -14,7 +14,7 @@ const fs = require("fs");
   // Đợi bạn đăng nhập xong và nhấn Enter
   process.stdin.once("data", async () => {
     const cookies = await page.cookies();
-    fs.writeFileSync("cookies.json", JSON.stringify(cookies, null, 2));
+    fs.writeFileSync("Instacookies.json", JSON.stringify(cookies, null, 2));
     console.log("✅Saved cookies to cookies.json");
     await browser.close();
     process.exit();

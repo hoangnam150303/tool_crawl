@@ -14,7 +14,7 @@ const fs = require("fs");
   //wait for user to login manually
   process.stdin.once("data", async () => {
     const cookies = await page.cookies();
-    fs.writeFileSync("cookies.json", JSON.stringify(cookies, null, 2));
+    fs.writeFileSync("Facecookies.json", JSON.stringify(cookies, null, 2));
     console.log("✅Saved cookies to cookies.json");
     await browser.close();
     process.exit();

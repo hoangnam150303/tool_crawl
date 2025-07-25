@@ -27,13 +27,13 @@ module.exports = async function crawlGenericWebsite(url) {
 
       for (let i = 0; i < anchors.length; i++) {
         const a = anchors[i];
-
         const img = a.querySelector("img");
         const titleTag = a.querySelector("h1, h2, h3, p, span");
         const title = titleTag?.innerText?.trim() || img?.alt || "No title";
         const imageUrl = img?.src || null;
         const articleUrl = a.href;
         if (!imageUrl || !articleUrl || title === "No title") continue; // Skip if any required field is missing
+
         if (imageUrl && articleUrl) {
           data.push({
             title,
@@ -44,6 +44,7 @@ module.exports = async function crawlGenericWebsite(url) {
           });
         }
       }
+      
       return data;
     });
 

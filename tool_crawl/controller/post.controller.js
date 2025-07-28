@@ -49,7 +49,9 @@ exports.updatePost = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Process not found" });
     }
-    post.updateOne({ $set: { reviewed_by: moderator_id } });
+    post.reviewed_by = moderator_id;
+    post.save();
+
     process.currentStatus = status;
     process.statusDates[status] = new Date();
     await process.save();

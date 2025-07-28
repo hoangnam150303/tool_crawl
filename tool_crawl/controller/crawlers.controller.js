@@ -16,54 +16,72 @@ async function readLinksFromFile(filePath) {
  */
 exports.handleCrawl = async (req, res) => {
   try {
-    const { urls } = req.body; // get urls from request body
+    const { urls } = req.body;
+    const { advertiser_id } = req.params;
 
     if (!urls) {
-      // check if urls are provided
       return res.status(400).json({ error: "URL is required" });
     }
 
-    let inserted = [];
-
-    // iterate through each URL
-    let result = []; // variable to store result of crawling
+    let result = [];
 
     if (urls.includes("facebook.com")) {
-      // check if URL is for Facebook
-      result = await crawlFacebook(urls); // crawl Facebook
-
-      inserted = await Post.insertMany(result); // insert crawled posts into MongoDB
+      result = await crawlFacebook(urls);
     } else if (urls.includes("instagram.com")) {
-      // check if URL is for Instagram
-      result = await crawlInstagram(urls); // crawl Instagram
-
-      inserted = await Post.insertMany(result); // insert crawled posts into MongoDB
+      result = await crawlInstagram(urls);
     } else {
       result = await crawlWebsite(urls);
-
-      inserted = await Post.insertMany(result);
     }
 
-    const simplified = inserted.map(
-      ({ _id, title, imageUrl, articleUrl, platform, date }) => ({
-        _id,
-        title,
-        imageUrl,
-        articleUrl,
-        date,
-        platform,
-      })
+    if (!Array.isArray(result)) {
+      console.error("Crawler output is not an array:", result);
+      return res.status(500).json({ error: "Crawler did not return an array" });
+    }
+
+    // Chuẩn hóa dữ liệu từ crawler
+    const formattedPosts = result.map((item) => ({
+      advertiser_id,
+      content: {
+        text: item.title || item.content || "",
+        label: false,
+      },
+      image: {
+        url: item.imageUrl || "",
+        label: false,
+      },
+      process_id: null,
+    }));
+
+    // Tìm các bài đã tồn tại
+    const texts = formattedPosts.map((p) => p.content.text);
+    const existing = await Post.find({ "content.text": { $in: texts } }).select(
+      "content.text"
     );
+    const existingTexts = new Set(existing.map((e) => e.content.text));
 
-    // Save the simplified posts to a file in the user's Downloads directory
-    const homeDir = os.homedir(); // get home directory of the user
-    const downloadsDir = path.join(homeDir, "Downloads"); // I want to save the file in Downloads
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); // create a timestamp for the file name
-    const fileName = `crawl-output-${timestamp}.json`; // create a file name with the timestamp
-    const fullPath = path.join(downloadsDir, fileName); // create the full path for the file
-    fs.writeFileSync(fullPath, JSON.stringify(simplified, null, 2), "utf-8"); // write the simplified posts to the file
+    // Chỉ chèn những post mới chưa có
+    const uniquePosts = formattedPosts.filter(
+      (p) => !existingTexts.has(p.content.text)
+    );
+    const inserted =
+      uniquePosts.length > 0 ? await Post.insertMany(uniquePosts) : [];
 
-    res.status(200).json(simplified);
+    // Trả về tất cả data crawl được (dù đã insert hay chưa)
+    const responseData = formattedPosts.map((p) => ({
+      title: p.content.text,
+      imageUrl: p.image.url,
+      inserted: !existingTexts.has(p.content.text), // true nếu là post mới được insert
+    }));
+
+    // Ghi vào file JSON
+    // const downloadsDir = path.join(os.homedir(), "Downloads");
+    // const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    // const fileName = `crawl-output-${timestamp}.json`;
+    // const fullPath = path.join(downloadsDir, fileName);
+
+    // fs.writeFileSync(fullPath, JSON.stringify(responseData, null, 2), "utf-8");
+
+    return res.status(200).json(responseData);
   } catch (error) {
     console.error("Error during crawling:", error);
     return res.status(500).json({ error: "Crawling failed" });

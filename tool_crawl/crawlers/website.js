@@ -1,25 +1,25 @@
 const puppeteer = require("puppeteer");
 
-/**
- * This function crawls a generic website to extract posts
- * It uses Puppeteer to navigate to the page and extract post data
- */
 module.exports = async function crawlGenericWebsite(url) {
   const browser = await puppeteer.launch({
-    headless: false, // set headless to false to see the browser actions
+    headless: true,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-blink-features=AutomationControlled",
     ],
-  }); // Launch a new browser instance
-  const page = await browser.newPage(); // Open a new page
+  });
+
+  const page = await browser.newPage();
 
   try {
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 }); // Navigate to the provided URL
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
 
-    // Wait for the page to load and ensure there are images present
-    await page.waitForSelector("img", { timeout: 10000 });
+    try {
+      await page.waitForSelector("img", { timeout: 10000 });
+    } catch {
+      console.warn("No images found, but continuing scrape...");
+    }
 
     const posts = await page.evaluate(() => {
       const data = [];
@@ -32,26 +32,25 @@ module.exports = async function crawlGenericWebsite(url) {
         const title = titleTag?.innerText?.trim() || img?.alt || "No title";
         const imageUrl = img?.src || null;
         const articleUrl = a.href;
-        if (!imageUrl || !articleUrl || title === "No title") continue; // Skip if any required field is missing
+        if (!imageUrl || !articleUrl || title === "No title") continue;
 
-        if (imageUrl && articleUrl) {
-          data.push({
-            title,
-            imageUrl,
-            articleUrl,
-            platform: "website",
-            date: new Date(Date.now() - i * 3600000).toISOString(),
-          });
-        }
+        data.push({
+          title,
+          imageUrl,
+          articleUrl,
+          platform: "website",
+          date: new Date(Date.now() - i * 3600000).toISOString(),
+        });
       }
-      
+
       return data;
     });
 
     await browser.close();
     return posts;
   } catch (error) {
+    console.error("Crawling error:", error.message);
     await browser.close();
-    return error.message;
+    return [];
   }
 };

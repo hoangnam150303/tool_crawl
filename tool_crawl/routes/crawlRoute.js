@@ -10,7 +10,7 @@ crawlRoute.post(
   crawlersController.handleAddJsonFile
 );
 
-crawlRoute.post("/crawl", crawlersController.handleCrawl);
+crawlRoute.post("/crawl/:advertiser_id", crawlersController.handleCrawl);
 crawlRoute.get("/getPost/:id", crawlersController.getPostById);
 
 module.exports = crawlRoute;

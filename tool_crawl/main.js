@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // route
-app.use("/api/v1/post", crawlRoute);
+app.use("/api/v1/crawl", crawlRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/validate", validateRoute);
 app.use("/api/v1/post", postRoute);
